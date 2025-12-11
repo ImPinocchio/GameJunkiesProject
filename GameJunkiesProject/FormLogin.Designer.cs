@@ -30,54 +30,56 @@
         {
             this.txtEmail = new System.Windows.Forms.TextBox();
             this.txtPass = new System.Windows.Forms.TextBox();
-            this.btnLogin = new System.Windows.Forms.Button();
-            this.btnIrRegistro = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // txtEmail
             // 
-            this.txtEmail.Location = new System.Drawing.Point(157, 63);
+            this.txtEmail.Location = new System.Drawing.Point(161, 82);
             this.txtEmail.Name = "txtEmail";
             this.txtEmail.Size = new System.Drawing.Size(100, 20);
             this.txtEmail.TabIndex = 0;
             // 
             // txtPass
             // 
-            this.txtPass.Location = new System.Drawing.Point(157, 114);
+            this.txtPass.Location = new System.Drawing.Point(161, 132);
             this.txtPass.Name = "txtPass";
             this.txtPass.Size = new System.Drawing.Size(100, 20);
             this.txtPass.TabIndex = 1;
             // 
-            // btnLogin
+            // button1
             // 
-            this.btnLogin.Location = new System.Drawing.Point(115, 166);
-            this.btnLogin.Name = "btnLogin";
-            this.btnLogin.Size = new System.Drawing.Size(75, 23);
-            this.btnLogin.TabIndex = 2;
-            this.btnLogin.Text = "Ingresar";
-            this.btnLogin.UseVisualStyleBackColor = true;
-            this.btnLogin.Click += new System.EventHandler(this.btnLogin_Click);
+            this.button1.Location = new System.Drawing.Point(124, 182);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 39);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "Iniciar Sesion";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // btnIrRegistro
+            // button2
             // 
-            this.btnIrRegistro.Location = new System.Drawing.Point(216, 166);
-            this.btnIrRegistro.Name = "btnIrRegistro";
-            this.btnIrRegistro.Size = new System.Drawing.Size(75, 23);
-            this.btnIrRegistro.TabIndex = 3;
-            this.btnIrRegistro.Text = "Registrarse";
-            this.btnIrRegistro.UseVisualStyleBackColor = true;
-            this.btnIrRegistro.Click += new System.EventHandler(this.btnIrRegistro_Click);
+            this.button2.Location = new System.Drawing.Point(218, 181);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 40);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Registrarse";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // FormLogin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(424, 284);
-            this.Controls.Add(this.btnIrRegistro);
-            this.Controls.Add(this.btnLogin);
+            this.ClientSize = new System.Drawing.Size(447, 297);
+            this.Controls.Add(this.button2);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.txtPass);
             this.Controls.Add(this.txtEmail);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "FormLogin";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "FormLogin";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -88,7 +90,7 @@
 
         private System.Windows.Forms.TextBox txtEmail;
         private System.Windows.Forms.TextBox txtPass;
-        private System.Windows.Forms.Button btnLogin;
-        private System.Windows.Forms.Button btnIrRegistro;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button2;
     }
 }

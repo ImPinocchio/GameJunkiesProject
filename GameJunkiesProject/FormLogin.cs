@@ -14,51 +14,63 @@ namespace GameJunkiesProject
 {
     public partial class FormLogin : Form
     {
+        // Constructor vacío (necesario para el arranque)
         public FormLogin()
         {
             InitializeComponent();
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        // Constructor que recibe Usuario (lo agregamos porque tu código lo pide para la redirección)
+        public FormLogin(Usuario usuario)
+        {
+            InitializeComponent();
+            // Aquí podrías usar 'usuario' si quisieras mostrar algo en la nueva ventana
+        }
+
+       
+
+        private void button1_Click(object sender, EventArgs e)
         {
             try
             {
-                // 1. Recogemos lo que escribió el usuario
-                string email = txtEmail.Text;
+                string email = txtEmail.Text.Trim();
                 string pass = txtPass.Text;
 
-                // 2. Llamamos al "Gerente" (Capa de Negocio)
                 UsuarioBL negocio = new UsuarioBL();
                 Usuario usuarioLogueado = negocio.ValidarAcceso(email, pass);
 
-                // 3. Verificamos la respuesta
                 if (usuarioLogueado != null)
                 {
-                    // ¡ÉXITO!
-                    MessageBox.Show($"¡Bienvenido {usuarioLogueado.NombreCompleto}!",
-                                    "GameJunkies", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    // Saludo (esto ya lo tienes bien)
+                    string nombre = !string.IsNullOrEmpty(usuarioLogueado.Nickname)
+                                    ? usuarioLogueado.Nickname
+                                    : usuarioLogueado.NombreCompleto;
 
-                    // Aquí es donde más adelante abriremos la Tienda Principal.
-                    // Por ahora, cerramos con éxito.
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
+                    MessageBox.Show($"¡Bienvenido {nombre}!", "GameJunkies", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    // --- AQUÍ ESTÁ LA CORRECCIÓN CLAVE ---
+                    this.Hide(); // Ocultamos el Login
+
+                    // IMPORTANTE: Aquí debe decir 'FormPrincipal', NO 'FormLogin'
+                    FormPrincipal tienda = new FormPrincipal(usuarioLogueado);
+
+                    tienda.ShowDialog(); // Abrimos la tienda
+                    this.Close(); // Al cerrar la tienda, se cierra el programa
                 }
                 else
                 {
-                    // FALLO
                     MessageBox.Show("Correo o contraseña incorrectos.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             catch (Exception ex)
             {
-                // ERROR TÉCNICO (Ej: No hay internet, BD apagada)
                 MessageBox.Show(ex.Message, "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
+
         }
 
-        private void btnIrRegistro_Click(object sender, EventArgs e)
+        private void button2_Click(object sender, EventArgs e)
         {
-            // Abrimos el formulario de registro como un diálogo (bloquea el login hasta que cierres registro)
             FormRegistro registro = new FormRegistro();
             registro.ShowDialog();
         }
