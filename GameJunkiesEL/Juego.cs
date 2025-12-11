@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 
 namespace GameJunkiesEL
 {
-    // Clase auxiliar para leer la clasificación (Ej: "Mature", "Everyone")
     public class EsrbRating
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string Slug { get; set; } // ej: "mature", "adults-only"
+        public string Slug { get; set; }
     }
 
     public class Juego
@@ -24,15 +23,15 @@ namespace GameJunkiesEL
         public double Rating { get; set; }
         public string Released { get; set; }
 
-        // AGREGAMOS ESTO:
         public EsrbRating Esrb_Rating { get; set; }
+
+        // --- NUEVO: Aquí guardaremos la sinopsis ---
+        // RAWG nos da 'description' (HTML) y 'description_raw' (Texto limpio). Usamos el limpio.
+        public string Description_Raw { get; set; }
     }
 
     public class RespuestaAPI
     {
         public List<Juego> Results { get; set; }
     }
-
-
-
 }

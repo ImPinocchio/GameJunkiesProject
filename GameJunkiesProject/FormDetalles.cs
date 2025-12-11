@@ -1,4 +1,5 @@
-﻿using GameJunkiesEL;
+﻿using GameJunkiesBL;
+using GameJunkiesEL;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,44 +16,61 @@ namespace GameJunkiesProject
     public partial class FormDetalles : Form
     {
         private Juego juegoSeleccionado;
+        private string precioCalculado; // Variable para guardar el precio
 
-        // Constructor que recibe el objeto Juego
         public FormDetalles(Juego juego)
         {
             InitializeComponent();
             juegoSeleccionado = juego;
 
+            // 1. Calculamos el precio una sola vez al inicio
+            precioCalculado = GenerarPrecioSimulado();
+
             // --- ESTÉTICA ---
             ConfigurarDiseño();
-            AplicarRedondeo(this, 25); // Redondeamos la ventana completa
-            AplicarRedondeo(btnComprar, 15); // Botón redondo
+            AplicarRedondeo(this, 25);
+            AplicarRedondeo(btnComprar, 15);
 
             // --- CARGAR DATOS ---
             CargarInformacion();
+
+            // --- CARGAR SINOPSIS ---
+            CargarDescripcionExtra();
+        }
+
+        // --- NUEVO MÉTODO: PRECIO BASADO EN ID ---
+        private string GenerarPrecioSimulado()
+        {
+            // Usamos el ID del juego como 'semilla' (Seed).
+            // Esto garantiza que si el juego ID 123 da $45.99, SIEMPRE dará $45.99.
+            Random rnd = new Random(juegoSeleccionado.Id);
+
+            // Generamos un número entre 19 y 69 (para que parezcan precios de juegos reales)
+            int basePrecio = rnd.Next(19, 70);
+
+            return $"${basePrecio}.99";
         }
 
         private void ConfigurarDiseño()
         {
-            // Colores Figma
-            this.BackColor = Color.FromArgb(61, 47, 109); // Morado Fondo
+            this.BackColor = Color.FromArgb(61, 47, 109);
 
-            // Estilo Título
             lblTitulo.ForeColor = Color.White;
             lblTitulo.Font = new Font("Segoe UI", 18, FontStyle.Bold);
 
-            // Estilo Detalles
             lblDetalles.ForeColor = Color.Gainsboro;
-            lblDetalles.Font = new Font("Segoe UI", 12, FontStyle.Regular);
+            lblDetalles.Font = new Font("Segoe UI", 10, FontStyle.Regular);
 
-            // Estilo Botón Comprar
-            btnComprar.BackColor = Color.FromArgb(253, 202, 90); // Amarillo
+            btnComprar.BackColor = Color.FromArgb(253, 202, 90);
             btnComprar.ForeColor = Color.Black;
             btnComprar.FlatStyle = FlatStyle.Flat;
             btnComprar.FlatAppearance.BorderSize = 0;
             btnComprar.Font = new Font("Segoe UI", 11, FontStyle.Bold);
             btnComprar.Cursor = Cursors.Hand;
 
-            // Estilo Botón Cerrar (Haremos que parezca un link o botón sutil)
+            // Actualizamos el texto del botón con el precio también
+            btnComprar.Text = $"Comprar {precioCalculado}";
+
             btnCerrar.Text = "X";
             btnCerrar.BackColor = Color.Transparent;
             btnCerrar.ForeColor = Color.White;
@@ -66,22 +84,52 @@ namespace GameJunkiesProject
         {
             lblTitulo.Text = juegoSeleccionado.Name;
 
-            // Armamos un texto descriptivo
-            lblDetalles.Text = $"📅 Lanzamiento: {juegoSeleccionado.Released}\n\n" +
-                               $"⭐ Calificación: {juegoSeleccionado.Rating}/5\n\n" +
-                               $"🎮 Categoría: {ObtenerClasificacion()}\n\n" +
-                               $"💰 Precio: $59.99"; // Precio simulado (la API no siempre lo trae)
+            // Usamos la variable 'precioCalculado'
+            lblDetalles.Text = $"📅 Lanzamiento: {juegoSeleccionado.Released}\n" +
+                               $"⭐ Calificación: {juegoSeleccionado.Rating}/5\n" +
+                               $"🎮 Categoría: {ObtenerClasificacion()}\n" +
+                               $"💰 Precio: {precioCalculado}";
 
             try
             {
                 if (!string.IsNullOrEmpty(juegoSeleccionado.Background_Image))
                 {
                     picPortada.Load(juegoSeleccionado.Background_Image);
+                    picPortada.SizeMode = PictureBoxSizeMode.StretchImage;
                 }
             }
             catch
             {
                 picPortada.BackColor = Color.Gray;
+            }
+        }
+
+        private async void CargarDescripcionExtra()
+        {
+            try
+            {
+                lblDetalles.Text += "\n\n⏳ Cargando sinopsis...";
+
+                ServicioJuegos servicio = new ServicioJuegos();
+                Juego juegoCompleto = await servicio.ObtenerDetalleJuego(juegoSeleccionado.Id);
+
+                if (juegoCompleto != null && !string.IsNullOrEmpty(juegoCompleto.Description_Raw))
+                {
+                    // Volvemos a armar el texto, manteniendo el precio calculado
+                    lblDetalles.Text = $"📅 Lanzamiento: {juegoSeleccionado.Released}\n" +
+                                       $"⭐ Calificación: {juegoSeleccionado.Rating}/5\n" +
+                                       $"🎮 Categoría: {ObtenerClasificacion()}\n" +
+                                       $"💰 Precio: {precioCalculado}\n\n" +
+                                       $"📝 SINOPSIS:\n{juegoCompleto.Description_Raw}";
+                }
+                else
+                {
+                    lblDetalles.Text = lblDetalles.Text.Replace("\n\n⏳ Cargando sinopsis...", "\n\n(Sinopsis no disponible)");
+                }
+            }
+            catch
+            {
+                lblDetalles.Text = lblDetalles.Text.Replace("\n\n⏳ Cargando sinopsis...", "");
             }
         }
 
@@ -92,9 +140,6 @@ namespace GameJunkiesProject
             return "General";
         }
 
-        
-
-        // --- MÉTODO DE REDONDEO (REUTILIZADO) ---
         private void AplicarRedondeo(Control control, int radio)
         {
             Rectangle bounds = new Rectangle(0, 0, control.Width, control.Height);
@@ -108,35 +153,60 @@ namespace GameJunkiesProject
             control.Region = new Region(path);
         }
 
-        // Evento para mover la ventana sin bordes (Drag & Drop)
-        // Puedes agregar esto si quieres poder arrastrar la ventana con el mouse
         protected override void WndProc(ref Message m)
         {
             base.WndProc(ref m);
             if (m.Msg == 0x84)
-            { // Trap WM_NCHITTEST
+            {
                 Point pos = new Point(m.LParam.ToInt32());
                 pos = this.PointToClient(pos);
                 if (pos.Y < 50)
-                { // Si el mouse está en los primeros 50px de arriba
-                    m.Result = (IntPtr)2;  // HTCAPTION
+                {
+                    m.Result = (IntPtr)2;
                     return;
                 }
             }
         }
 
-        // --- BOTONES ---
-
         private void btnCerrar_Click_1(object sender, EventArgs e)
         {
-            this.Close(); // Cierra solo esta ventana modal
+            this.Close();
         }
 
         private void btnComprar_Click_1(object sender, EventArgs e)
         {
-            MessageBox.Show($"¡Gracias por comprar {juegoSeleccionado.Name}!\nSe ha añadido a tu biblioteca.",
-                            "Compra Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            this.Close();
+            // 1. Convertimos el precio de string ("$59.99") a decimal (59.99)
+            // Quitamos el signo de dólar y espacios
+            string precioLimpio = precioCalculado.Replace("$", "").Trim();
+
+            // Usamos CultureInfo.InvariantCulture para asegurar que el punto (.) se lea como decimal
+            decimal precioNumerico = 0;
+            if (!decimal.TryParse(precioLimpio, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out precioNumerico))
+            {
+                precioNumerico = 59.99m; // Precio por defecto si falla la conversión
+            }
+
+            // 2. Agregamos al carrito usando el Servicio (Capa BL)
+            GameJunkiesBL.ServicioCarrito.AgregarJuego(juegoSeleccionado, precioNumerico);
+
+            // 3. Preguntamos al usuario qué quiere hacer
+            DialogResult respuesta = MessageBox.Show(
+                $"Se agregó '{juegoSeleccionado.Name}' al carrito.\n\n¿Quieres ir a Pagar ahora?",
+                "Agregado al Carrito",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (respuesta == DialogResult.Yes)
+            {
+                this.Close(); // Cerramos detalles
+                              // AQUÍ abriremos el FormCarrito en el siguiente paso
+                              // Por ahora, puedes poner un MessageBox temporal:
+                              // MessageBox.Show("Abriendo carrito..."); 
+            }
+            else
+            {
+                this.Close(); // Cerramos detalles y vuelve al catálogo
+            }
         }
     }
 }

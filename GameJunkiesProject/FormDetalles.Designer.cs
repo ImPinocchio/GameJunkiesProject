@@ -68,7 +68,7 @@
             // 
             this.btnComprar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(253)))), ((int)(((byte)(202)))), ((int)(((byte)(90)))));
             this.btnComprar.Font = new System.Drawing.Font("Sans Serif Collection", 8.999999F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btnComprar.Location = new System.Drawing.Point(370, 288);
+            this.btnComprar.Location = new System.Drawing.Point(371, 312);
             this.btnComprar.Name = "btnComprar";
             this.btnComprar.Size = new System.Drawing.Size(139, 35);
             this.btnComprar.TabIndex = 3;
