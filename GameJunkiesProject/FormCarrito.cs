@@ -70,29 +70,27 @@ namespace GameJunkiesProject
 
         private void btnPagar_Click(object sender, EventArgs e)
         {
-            // 1. Calculamos el total para pasárselo al formulario de pago
             decimal totalAPagar = ServicioCarrito.CalcularTotal();
-
-            // 2. Abrimos el formulario de pago como un diálogo modal
             FormPago formularioPago = new FormPago(totalAPagar);
-
-            // Esperamos a ver qué pasa (Si le da a Confirmar o Cancelar)
             DialogResult resultado = formularioPago.ShowDialog();
 
-            // 3. Si el usuario completó el pago correctamente (Validaciones pasaron)
             if (resultado == DialogResult.OK)
             {
-                // Vaciamos el carrito (Lógica de negocio)
+                // --- NUEVO: MOVER JUEGOS A LA BIBLIOTECA ---
+                var itemsCarrito = ServicioCarrito.ObtenerCarrito();
+                foreach (var item in itemsCarrito)
+                {
+                    ServicioBiblioteca.AgregarJuego(item.JuegoSeleccionado);
+                }
+                // -------------------------------------------
+
                 ServicioCarrito.VaciarCarrito();
 
-                // Mostramos mensaje de éxito final
-                MessageBox.Show("¡Pago procesado correctamente!\n\nGracias por comprar en GameJunkies. Los juegos ya están en tu biblioteca.",
+                MessageBox.Show("¡Pago procesado correctamente!\n\nLos juegos se han añadido a tu Biblioteca.",
                                 "Compra Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Cerramos el carrito
                 this.Close();
             }
-            // Si dio a cancelar, no hacemos nada y sigue en el carrito
         }
 
         private void btnVaciar_Click(object sender, EventArgs e)

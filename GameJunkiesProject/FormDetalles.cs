@@ -16,37 +16,52 @@ namespace GameJunkiesProject
     public partial class FormDetalles : Form
     {
         private Juego juegoSeleccionado;
-        private string precioCalculado; // Variable para guardar el precio
+        private string precioCalculado;
 
         public FormDetalles(Juego juego)
         {
             InitializeComponent();
             juegoSeleccionado = juego;
 
-            // 1. Calculamos el precio una sola vez al inicio
+            // 1. Calculamos el precio
             precioCalculado = GenerarPrecioSimulado();
 
-            // --- ESTÉTICA ---
+            // 2. Configuramos el diseño base
             ConfigurarDiseño();
             AplicarRedondeo(this, 25);
             AplicarRedondeo(btnComprar, 15);
 
-            // --- CARGAR DATOS ---
+            // 3. Cargamos la info
             CargarInformacion();
-
-            // --- CARGAR SINOPSIS ---
             CargarDescripcionExtra();
+
+            // --- NUEVO: VERIFICACIÓN DE PROPIEDAD ---
+            VerificarSiYaLoTengo();
         }
 
-        // --- NUEVO MÉTODO: PRECIO BASADO EN ID ---
+        // Método para ocultar el botón si ya tienes el juego
+        private void VerificarSiYaLoTengo()
+        {
+            // Preguntamos al Servicio de Biblioteca si el ID existe en mis juegos
+            bool yaLoTengo = ServicioBiblioteca.YaTengoEsteJuego(juegoSeleccionado.Id);
+
+            if (yaLoTengo)
+            {
+                // Si ya lo tengo:
+                btnComprar.Enabled = false;           // Desactivamos el click
+                btnComprar.Text = "✅ EN BIBLIOTECA"; // Cambiamos el texto
+                btnComprar.BackColor = Color.FromArgb(46, 204, 113); // Color Verde (Éxito)
+                btnComprar.ForeColor = Color.White;
+
+                // OPCIONAL: Si prefieres que DESAPAREZCA totalmente, usa esto:
+                // btnComprar.Visible = false; 
+            }
+        }
+
         private string GenerarPrecioSimulado()
         {
-            // Usamos el ID del juego como 'semilla' (Seed).
             Random rnd = new Random(juegoSeleccionado.Id);
-
-            // Generamos un número entre 19 y 69
             int basePrecio = rnd.Next(19, 70);
-
             return $"${basePrecio}.99";
         }
 
@@ -66,8 +81,6 @@ namespace GameJunkiesProject
             btnComprar.FlatAppearance.BorderSize = 0;
             btnComprar.Font = new Font("Segoe UI", 11, FontStyle.Bold);
             btnComprar.Cursor = Cursors.Hand;
-
-            // Actualizamos el texto del botón con el precio también
             btnComprar.Text = $"Comprar {precioCalculado}";
 
             btnCerrar.Text = "X";
@@ -179,7 +192,7 @@ namespace GameJunkiesProject
                 precioNumerico = 59.99m;
             }
 
-            GameJunkiesBL.ServicioCarrito.AgregarJuego(juegoSeleccionado, precioNumerico);
+            ServicioCarrito.AgregarJuego(juegoSeleccionado, precioNumerico);
 
             DialogResult respuesta = MessageBox.Show(
                 $"Se agregó '{juegoSeleccionado.Name}' al carrito.\n\n¿Quieres ir a Pagar ahora?",
@@ -189,14 +202,12 @@ namespace GameJunkiesProject
 
             if (respuesta == DialogResult.Yes)
             {
-                // CAMBIO CLAVE:
-                // No abrimos el carrito aquí. Solo avisamos que el usuario dijo "SI"
                 this.DialogResult = DialogResult.Yes;
                 this.Close();
             }
             else
             {
-                this.DialogResult = DialogResult.No; // Usuario dijo "NO"
+                this.DialogResult = DialogResult.No;
                 this.Close();
             }
         }

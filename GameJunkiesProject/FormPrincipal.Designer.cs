@@ -31,13 +31,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.txtBuscar = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnVerCarrito = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblPagina = new System.Windows.Forms.Label();
             this.btnSiguiente = new System.Windows.Forms.Button();
             this.btnAnterior = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnVerCarrito = new System.Windows.Forms.Button();
+            this.btnBiblioteca = new System.Windows.Forms.Button();
+            this.btnIA = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -49,7 +51,7 @@
             this.txtBuscar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtBuscar.Font = new System.Drawing.Font("Microsoft Sans Serif", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.txtBuscar.ForeColor = System.Drawing.Color.Yellow;
-            this.txtBuscar.Location = new System.Drawing.Point(558, 12);
+            this.txtBuscar.Location = new System.Drawing.Point(638, 12);
             this.txtBuscar.Name = "txtBuscar";
             this.txtBuscar.Size = new System.Drawing.Size(211, 24);
             this.txtBuscar.TabIndex = 1;
@@ -57,6 +59,8 @@
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(92)))), ((int)(((byte)(255)))));
+            this.panel1.Controls.Add(this.btnIA);
+            this.panel1.Controls.Add(this.btnBiblioteca);
             this.panel1.Controls.Add(this.btnVerCarrito);
             this.panel1.Controls.Add(this.pictureBox1);
             this.panel1.Controls.Add(this.lblPagina);
@@ -69,10 +73,20 @@
             this.panel1.Size = new System.Drawing.Size(861, 74);
             this.panel1.TabIndex = 2;
             // 
+            // btnVerCarrito
+            // 
+            this.btnVerCarrito.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnVerCarrito.Location = new System.Drawing.Point(485, 12);
+            this.btnVerCarrito.Name = "btnVerCarrito";
+            this.btnVerCarrito.Size = new System.Drawing.Size(75, 30);
+            this.btnVerCarrito.TabIndex = 6;
+            this.btnVerCarrito.Text = "🛒 Carrito";
+            this.btnVerCarrito.UseVisualStyleBackColor = true;
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
-            this.pictureBox1.Location = new System.Drawing.Point(520, 12);
+            this.pictureBox1.Location = new System.Drawing.Point(596, 12);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(32, 24);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
@@ -132,15 +146,25 @@
             this.flowLayoutPanel1.Size = new System.Drawing.Size(861, 357);
             this.flowLayoutPanel1.TabIndex = 1;
             // 
-            // btnVerCarrito
+            // btnBiblioteca
             // 
-            this.btnVerCarrito.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnVerCarrito.Location = new System.Drawing.Point(12, 45);
-            this.btnVerCarrito.Name = "btnVerCarrito";
-            this.btnVerCarrito.Size = new System.Drawing.Size(75, 23);
-            this.btnVerCarrito.TabIndex = 6;
-            this.btnVerCarrito.Text = "🛒 Carrito";
-            this.btnVerCarrito.UseVisualStyleBackColor = true;
+            this.btnBiblioteca.Location = new System.Drawing.Point(12, 19);
+            this.btnBiblioteca.Name = "btnBiblioteca";
+            this.btnBiblioteca.Size = new System.Drawing.Size(98, 23);
+            this.btnBiblioteca.TabIndex = 7;
+            this.btnBiblioteca.Text = "📚 Biblioteca";
+            this.btnBiblioteca.UseVisualStyleBackColor = true;
+            this.btnBiblioteca.Click += new System.EventHandler(this.btnBiblioteca_Click_1);
+            // 
+            // btnIA
+            // 
+            this.btnIA.Location = new System.Drawing.Point(316, 48);
+            this.btnIA.Name = "btnIA";
+            this.btnIA.Size = new System.Drawing.Size(95, 23);
+            this.btnIA.TabIndex = 8;
+            this.btnIA.Text = "Asistente IA";
+            this.btnIA.UseVisualStyleBackColor = true;
+            this.btnIA.Click += new System.EventHandler(this.btnIA_Click);
             // 
             // FormPrincipal
             // 
@@ -173,5 +197,7 @@
         private System.Windows.Forms.Label lblPagina;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Button btnVerCarrito;
+        private System.Windows.Forms.Button btnBiblioteca;
+        private System.Windows.Forms.Button btnIA;
     }
 }

@@ -236,5 +236,20 @@ namespace GameJunkiesProject
         {
             Application.Exit();
         }
+
+
+        private void btnBiblioteca_Click_1(object sender, EventArgs e)
+        {
+            FormBiblioteca biblioteca = new FormBiblioteca();
+
+            // Lo mostramos. Usamos Show() para que puedas tener abierta la tienda y la biblioteca a la vez
+            biblioteca.Show();
+
+        }
+
+        private void btnIA_Click(object sender, EventArgs e)
+        {
+            new FormChatIA().Show();
+        }
     }
 }

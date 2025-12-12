@@ -15,32 +15,26 @@ namespace GameJunkiesProject
     public partial class ControlJuego : UserControl
     {
         public Juego JuegoDatos { get; private set; }
+        public bool ModoBiblioteca { get; set; } = false; // Propiedad para el modo Jugar
 
-        // --- COLORES DE TU FIGMA ---
-        // 1. Morado Estantes (#5A4A93) -> RGB: 90, 74, 147
+        // Colores
         private readonly Color colorNormal = Color.FromArgb(90, 74, 147);
-
-        // 2. Un tono ligeramente más claro para el efecto Hover
         private readonly Color colorHover = Color.FromArgb(110, 94, 167);
-
-        // 3. Amarillo Botón (#FDCA5A) -> RGB: 253, 202, 90
         private readonly Color colorBoton = Color.FromArgb(253, 202, 90);
 
         public ControlJuego()
         {
             InitializeComponent();
 
-            // --- CONFIGURACIÓN VISUAL ---
+            // Configuración visual inicial
             this.Padding = new Padding(4);
-            this.BackColor = Color.FromArgb(61, 47, 109); // Fondo oscuro (se funde con el Form)
-
+            this.BackColor = Color.FromArgb(61, 47, 109);
             panelFondo.BackColor = colorNormal;
             this.Cursor = Cursors.Hand;
 
-            // --- ESTILOS DE TEXTO Y BOTÓN ---
+            // Estilos
             lblTitulo.ForeColor = Color.White;
             lblTitulo.Font = new Font("Segoe UI", 10, FontStyle.Bold);
-
             lblRating.ForeColor = Color.Gold;
 
             btnVer.BackColor = colorBoton;
@@ -50,61 +44,48 @@ namespace GameJunkiesProject
             btnVer.Font = new Font("Segoe UI", 9, FontStyle.Bold);
             btnVer.Cursor = Cursors.Hand;
 
-            // --- AQUÍ ESTÁ LA MAGIA DEL REDONDEO ---
-            // 1. Aplicamos el redondeo inicial (Radio 20 como en tu Figma)
+            // Redondeo
             AplicarRedondeo(panelFondo, 20);
-            AplicarRedondeo(btnVer, 10); // El botón también lo redondeamos un poco
+            AplicarRedondeo(btnVer, 10);
 
-            // 2. IMPORTANTE: Si el panel cambia de tamaño (Zoom), recalculamos las curvas
-            panelFondo.SizeChanged += (s, e) => {
-                AplicarRedondeo(panelFondo, 20);
-            };
-
-            // Conectamos los eventos de Mouse (Hover)
+            panelFondo.SizeChanged += (s, e) => AplicarRedondeo(panelFondo, 20);
             AsignarEventosHover(panelFondo);
         }
 
-        private void AsignarEventosHover(Control control)
-        {
-            control.MouseEnter += EfectoEntrada;
-            control.MouseLeave += EfectoSalida;
-
-            // IMPORTANTE: El botón mantiene su propio click, 
-            // pero el resto de la tarjeta dispara el evento del botón también.
-            if (!(control is Button))
-            {
-                control.Click += btnVer_Click;
-            }
-
-            foreach (Control hijo in control.Controls)
-            {
-                if (!(hijo is Button))
-                {
-                    AsignarEventosHover(hijo);
-                }
-            }
-        }
-
-        private void EfectoEntrada(object sender, EventArgs e)
-        {
-            this.Padding = new Padding(0); // Efecto Zoom
-            panelFondo.BackColor = colorHover; // Se ilumina un poco
-        }
-
-        private void EfectoSalida(object sender, EventArgs e)
-        {
-            if (!this.ClientRectangle.Contains(this.PointToClient(Cursor.Position)))
-            {
-                this.Padding = new Padding(4);
-                panelFondo.BackColor = colorNormal; // Vuelve al Morado Figma
-            }
-        }
-
+        // --- MÉTODO ÚNICO PARA CARGAR DATOS ---
         public void CargarDatos(Juego juego)
         {
             JuegoDatos = juego;
             lblTitulo.Text = juego.Name;
-            lblRating.Text = $"⭐ {juego.Rating}"; // Aquí podrías poner el precio si prefieres
+            lblRating.Text = $"⭐ {juego.Rating}";
+
+            // Lógica: Si estamos en biblioteca, el botón es "JUGAR", si no, es "VER"
+            if (ModoBiblioteca)
+            {
+                btnVer.Text = "JUGAR ▶";
+                btnVer.BackColor = Color.FromArgb(46, 204, 113); // Verde
+                btnVer.ForeColor = Color.White;
+
+                // Reiniciamos eventos para evitar duplicados
+                btnVer.Click -= btnVer_Click;
+                btnVer.Click -= btnJugar_Click;
+
+                // Asignamos solo el de jugar
+                btnVer.Click += btnJugar_Click;
+            }
+            else
+            {
+                btnVer.Text = "VER";
+                btnVer.BackColor = colorBoton;
+                btnVer.ForeColor = Color.Black;
+
+                // Reiniciamos eventos
+                btnVer.Click -= btnVer_Click;
+                btnVer.Click -= btnJugar_Click;
+
+                // Asignamos solo el de ver detalles
+                btnVer.Click += btnVer_Click;
+            }
 
             try
             {
@@ -116,10 +97,11 @@ namespace GameJunkiesProject
             }
             catch
             {
-                picPortada.BackColor = Color.FromArgb(50, 40, 90); // Un morado oscuro si falla la img
+                picPortada.BackColor = Color.FromArgb(50, 40, 90);
             }
         }
 
+        // Evento para Ver Detalles (Tienda)
         private void btnVer_Click(object sender, EventArgs e)
         {
             if (JuegoDatos != null)
@@ -139,13 +121,11 @@ namespace GameJunkiesProject
                     detalle.StartPosition = FormStartPosition.CenterScreen;
                     detalle.TopMost = true;
 
-                    // CAMBIO CLAVE: Guardamos la respuesta del formulario
                     DialogResult resultado = detalle.ShowDialog();
 
-                    sombra.Close(); // Quitamos la sombra oscura
+                    sombra.Close();
 
-                    // AHORA SÍ: Si el usuario dijo "Yes" (Ir a pagar), abrimos el carrito aquí
-                    // Como estamos fuera del 'detalle.ShowDialog', el detalle YA se cerró.
+                    // Si en el detalle le dieron a "Ir a Pagar", abrimos el carrito
                     if (resultado == DialogResult.Yes)
                     {
                         FormCarrito carrito = new FormCarrito();
@@ -154,25 +134,58 @@ namespace GameJunkiesProject
                 }
             }
         }
+
+        // Evento para Jugar (Biblioteca)
+        private void btnJugar_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show($"Iniciando {JuegoDatos.Name}...\n\n(Imagina que el juego se abre en pantalla completa 🎮)",
+                   "Ejecutando", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        // --- MÉTODOS VISUALES AUXILIARES ---
+        private void AsignarEventosHover(Control control)
+        {
+            control.MouseEnter += EfectoEntrada;
+            control.MouseLeave += EfectoSalida;
+            if (!(control is Button))
+            {
+                // Si haces click en la tarjeta (no en el botón), también actúa según el modo
+                if (ModoBiblioteca) control.Click += btnJugar_Click;
+                else control.Click += btnVer_Click;
+            }
+
+            foreach (Control hijo in control.Controls)
+            {
+                if (!(hijo is Button)) AsignarEventosHover(hijo);
+            }
+        }
+
+        private void EfectoEntrada(object sender, EventArgs e)
+        {
+            this.Padding = new Padding(0);
+            panelFondo.BackColor = colorHover;
+        }
+
+        private void EfectoSalida(object sender, EventArgs e)
+        {
+            if (!this.ClientRectangle.Contains(this.PointToClient(Cursor.Position)))
+            {
+                this.Padding = new Padding(4);
+                panelFondo.BackColor = colorNormal;
+            }
+        }
+
         private void AplicarRedondeo(Control control, int radio)
         {
             Rectangle bounds = new Rectangle(0, 0, control.Width, control.Height);
             GraphicsPath path = new GraphicsPath();
-
-            int d = radio * 2; // Diámetro de la curva
-
-            // Dibujamos los 4 arcos de las esquinas
-            path.AddArc(bounds.X, bounds.Y, d, d, 180, 90); // Arriba-Izquierda
-            path.AddArc(bounds.X + bounds.Width - d, bounds.Y, d, d, 270, 90); // Arriba-Derecha
-            path.AddArc(bounds.X + bounds.Width - d, bounds.Y + bounds.Height - d, d, d, 0, 90); // Abajo-Derecha
-            path.AddArc(bounds.X, bounds.Y + bounds.Height - d, d, d, 90, 90); // Abajo-Izquierda
-
+            int d = radio * 2;
+            path.AddArc(bounds.X, bounds.Y, d, d, 180, 90);
+            path.AddArc(bounds.X + bounds.Width - d, bounds.Y, d, d, 270, 90);
+            path.AddArc(bounds.X + bounds.Width - d, bounds.Y + bounds.Height - d, d, d, 0, 90);
+            path.AddArc(bounds.X, bounds.Y + bounds.Height - d, d, d, 90, 90);
             path.CloseFigure();
-
-            // Aplicamos el recorte
             control.Region = new Region(path);
         }
-
-
     }
 }
