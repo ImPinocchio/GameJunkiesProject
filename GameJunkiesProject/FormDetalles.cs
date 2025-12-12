@@ -172,20 +172,15 @@ namespace GameJunkiesProject
 
         private void btnComprar_Click_1(object sender, EventArgs e)
         {
-            // 1. Convertimos el precio de string ("$59.99") a decimal (59.99)
             string precioLimpio = precioCalculado.Replace("$", "").Trim();
-
-            // Usamos CultureInfo.InvariantCulture para asegurar que el punto (.) se lea como decimal
             decimal precioNumerico = 0;
             if (!decimal.TryParse(precioLimpio, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out precioNumerico))
             {
-                precioNumerico = 59.99m; // Precio por defecto si falla la conversión
+                precioNumerico = 59.99m;
             }
 
-            // 2. Agregamos al carrito usando el Servicio (Capa BL)
             GameJunkiesBL.ServicioCarrito.AgregarJuego(juegoSeleccionado, precioNumerico);
 
-            // 3. Preguntamos al usuario qué quiere hacer
             DialogResult respuesta = MessageBox.Show(
                 $"Se agregó '{juegoSeleccionado.Name}' al carrito.\n\n¿Quieres ir a Pagar ahora?",
                 "Agregado al Carrito",
@@ -194,15 +189,15 @@ namespace GameJunkiesProject
 
             if (respuesta == DialogResult.Yes)
             {
-                this.Close(); // Cerramos detalles primero
-
-                // --- CAMBIO APLICADO: ABRIMOS EL CARRITO ---
-                FormCarrito carrito = new FormCarrito();
-                carrito.ShowDialog();
+                // CAMBIO CLAVE:
+                // No abrimos el carrito aquí. Solo avisamos que el usuario dijo "SI"
+                this.DialogResult = DialogResult.Yes;
+                this.Close();
             }
             else
             {
-                this.Close(); // Cerramos detalles y vuelve al catálogo
+                this.DialogResult = DialogResult.No; // Usuario dijo "NO"
+                this.Close();
             }
         }
     }

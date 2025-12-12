@@ -124,7 +124,6 @@ namespace GameJunkiesProject
         {
             if (JuegoDatos != null)
             {
-                // Creamos una sombra oscura detrás para dar profundidad (Opcional pero pro)
                 using (Form sombra = new Form())
                 {
                     sombra.StartPosition = FormStartPosition.Manual;
@@ -136,13 +135,22 @@ namespace GameJunkiesProject
                     sombra.ShowInTaskbar = false;
                     sombra.Show();
 
-                    // Abrimos el detalle
                     FormDetalles detalle = new FormDetalles(JuegoDatos);
                     detalle.StartPosition = FormStartPosition.CenterScreen;
-                    detalle.TopMost = true; // Asegura que quede encima de la sombra
-                    detalle.ShowDialog(); // Pausa el programa hasta cerrar el detalle
+                    detalle.TopMost = true;
 
-                    sombra.Close(); // Quitamos la sombra al volver
+                    // CAMBIO CLAVE: Guardamos la respuesta del formulario
+                    DialogResult resultado = detalle.ShowDialog();
+
+                    sombra.Close(); // Quitamos la sombra oscura
+
+                    // AHORA SÍ: Si el usuario dijo "Yes" (Ir a pagar), abrimos el carrito aquí
+                    // Como estamos fuera del 'detalle.ShowDialog', el detalle YA se cerró.
+                    if (resultado == DialogResult.Yes)
+                    {
+                        FormCarrito carrito = new FormCarrito();
+                        carrito.ShowDialog();
+                    }
                 }
             }
         }
