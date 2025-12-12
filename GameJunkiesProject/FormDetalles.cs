@@ -42,10 +42,9 @@ namespace GameJunkiesProject
         private string GenerarPrecioSimulado()
         {
             // Usamos el ID del juego como 'semilla' (Seed).
-            // Esto garantiza que si el juego ID 123 da $45.99, SIEMPRE dará $45.99.
             Random rnd = new Random(juegoSeleccionado.Id);
 
-            // Generamos un número entre 19 y 69 (para que parezcan precios de juegos reales)
+            // Generamos un número entre 19 y 69
             int basePrecio = rnd.Next(19, 70);
 
             return $"${basePrecio}.99";
@@ -84,7 +83,6 @@ namespace GameJunkiesProject
         {
             lblTitulo.Text = juegoSeleccionado.Name;
 
-            // Usamos la variable 'precioCalculado'
             lblDetalles.Text = $"📅 Lanzamiento: {juegoSeleccionado.Released}\n" +
                                $"⭐ Calificación: {juegoSeleccionado.Rating}/5\n" +
                                $"🎮 Categoría: {ObtenerClasificacion()}\n" +
@@ -115,7 +113,6 @@ namespace GameJunkiesProject
 
                 if (juegoCompleto != null && !string.IsNullOrEmpty(juegoCompleto.Description_Raw))
                 {
-                    // Volvemos a armar el texto, manteniendo el precio calculado
                     lblDetalles.Text = $"📅 Lanzamiento: {juegoSeleccionado.Released}\n" +
                                        $"⭐ Calificación: {juegoSeleccionado.Rating}/5\n" +
                                        $"🎮 Categoría: {ObtenerClasificacion()}\n" +
@@ -176,7 +173,6 @@ namespace GameJunkiesProject
         private void btnComprar_Click_1(object sender, EventArgs e)
         {
             // 1. Convertimos el precio de string ("$59.99") a decimal (59.99)
-            // Quitamos el signo de dólar y espacios
             string precioLimpio = precioCalculado.Replace("$", "").Trim();
 
             // Usamos CultureInfo.InvariantCulture para asegurar que el punto (.) se lea como decimal
@@ -198,10 +194,11 @@ namespace GameJunkiesProject
 
             if (respuesta == DialogResult.Yes)
             {
-                this.Close(); // Cerramos detalles
-                              // AQUÍ abriremos el FormCarrito en el siguiente paso
-                              // Por ahora, puedes poner un MessageBox temporal:
-                              // MessageBox.Show("Abriendo carrito..."); 
+                this.Close(); // Cerramos detalles primero
+
+                // --- CAMBIO APLICADO: ABRIMOS EL CARRITO ---
+                FormCarrito carrito = new FormCarrito();
+                carrito.ShowDialog();
             }
             else
             {

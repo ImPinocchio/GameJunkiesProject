@@ -55,6 +55,12 @@
     <Compile Include="ControlJuego.Designer.cs">
       <DependentUpon>ControlJuego.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormCarrito.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormCarrito.Designer.cs">
+      <DependentUpon>FormCarrito.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormDetalles.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -66,6 +72,12 @@
     </Compile>
     <Compile Include="FormLogin.Designer.cs">
       <DependentUpon>FormLogin.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPago.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormPago.Designer.cs">
+      <DependentUpon>FormPago.cs</DependentUpon>
     </Compile>
     <Compile Include="FormPrincipal.cs">
       <SubType>Form</SubType>
@@ -84,11 +96,17 @@
     <EmbeddedResource Include="ControlJuego.resx">
       <DependentUpon>ControlJuego.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FormCarrito.resx">
+      <DependentUpon>FormCarrito.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FormDetalles.resx">
       <DependentUpon>FormDetalles.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormLogin.resx">
       <DependentUpon>FormLogin.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormPago.resx">
+      <DependentUpon>FormPago.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormPrincipal.resx">
       <DependentUpon>FormPrincipal.cs</DependentUpon>

@@ -42,6 +42,14 @@ namespace GameJunkiesProject
             btnAnterior.Click += btnAnterior_Click;
             btnSiguiente.Click += btnSiguiente_Click;
 
+            // --- NUEVO: CONECTAR BOTÓN DE CARRITO ---
+            // Asegúrate de haber creado 'btnVerCarrito' en el diseño
+            // Si no lo tienes aún en el diseño, comenta esta línea temporalmente.
+            if (Controls.ContainsKey("btnVerCarrito") || btnVerCarrito != null)
+            {
+                btnVerCarrito.Click += btnVerCarrito_Click;
+            }
+
             // --- INICIO ALEATORIO ---
             // Empezamos en una página al azar entre la 1 y la 10 para ver juegos distintos
             Random rnd = new Random();
@@ -49,6 +57,14 @@ namespace GameJunkiesProject
 
             // Cargamos esa página
             CargarPagina();
+        }
+
+        // --- EVENTO DEL BOTÓN CARRITO ---
+        private void btnVerCarrito_Click(object sender, EventArgs e)
+        {
+            // Creamos y mostramos la ventana del carrito
+            FormCarrito carrito = new FormCarrito();
+            carrito.ShowDialog(); // ShowDialog hace que no puedas tocar la ventana de atrás hasta cerrar esta
         }
 
         private async void CargarPagina()
@@ -69,10 +85,11 @@ namespace GameJunkiesProject
                 // Mostramos los juegos
                 MostrarJuegosEnPantalla(listaJuegosActual);
 
-                // --- AQUÍ ESTÁ EL CAMBIO ---
-                // Accedemos directamente al control. 
-                // Si te marca error rojo aquí, es que no le pusiste "lblPagina" en el diseño.
-                lblPagina.Text = $"Página: {paginaActual}";
+                // Actualizamos etiqueta de página
+                if (Controls.ContainsKey("lblPagina"))
+                {
+                    lblPagina.Text = $"Página: {paginaActual}";
+                }
             }
             catch (Exception ex)
             {
@@ -136,7 +153,7 @@ namespace GameJunkiesProject
             flowLayoutPanel1.AutoScrollPosition = new Point(0, 0);
         }
 
-        // --- LÓGICA DE BÚSQUEDA (Sin cambios) ---
+        // --- LÓGICA DE BÚSQUEDA ---
         private async void txtBuscar_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
