@@ -10,23 +10,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using GameJunkiesDL; // Elimine o comente esta línea si no existe el proyecto o ensamblado GameJunkiesDL
 
 namespace GameJunkiesProject
 {
     public partial class FormCarrito : Form
     {
-        public FormCarrito()
+        private Usuario comprador; // Variable para guardar quién compra
+
+        // Modifica el constructor así:
+        public FormCarrito(Usuario usuario)
         {
             InitializeComponent();
+            comprador = usuario; // Guardamos al usuario que nos pasan
 
-            // 1. Aplicamos el diseño visual (Colores, fuentes)
             ConfigurarDiseño();
-
-            // 2. Redondeamos bordes para que se vea moderno
             AplicarRedondeo(this, 20);
             AplicarRedondeo(btnPagar, 15);
-
-            // 3. Cargamos los datos del carrito
             CargarItems();
         }
 
@@ -71,25 +71,36 @@ namespace GameJunkiesProject
         private void btnPagar_Click(object sender, EventArgs e)
         {
             decimal totalAPagar = ServicioCarrito.CalcularTotal();
+
+            // 1. Pedimos datos de pago (Tarjeta simulada)
             FormPago formularioPago = new FormPago(totalAPagar);
             DialogResult resultado = formularioPago.ShowDialog();
 
             if (resultado == DialogResult.OK)
             {
-                // --- NUEVO: MOVER JUEGOS A LA BIBLIOTECA ---
-                var itemsCarrito = ServicioCarrito.ObtenerCarrito();
-                foreach (var item in itemsCarrito)
+                try
                 {
-                    ServicioBiblioteca.AgregarJuego(item.JuegoSeleccionado);
+                    // 2. GUARDAMOS EN BASE DE DATOS (MySQL)
+                    var itemsCarrito = ServicioCarrito.ObtenerCarrito();
+
+                    // Instanciamos la DAL que acabamos de crear
+                    TransaccionDAL transaccion = new TransaccionDAL();
+
+                    // Registramos la compra real
+                    transaccion.RegistrarCompra(comprador, itemsCarrito, totalAPagar, "Tarjeta de Crédito");
+
+                    // 3. Limpieza y Éxito
+                    ServicioCarrito.VaciarCarrito();
+
+                    MessageBox.Show("¡Compra realizada con éxito! 🎉\n\nTus juegos ya están disponibles en tu Biblioteca listos para descargar.",
+                                    "¡A Jugar!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                    this.Close();
                 }
-                // -------------------------------------------
-
-                ServicioCarrito.VaciarCarrito();
-
-                MessageBox.Show("¡Pago procesado correctamente!\n\nLos juegos se han añadido a tu Biblioteca.",
-                                "Compra Exitosa", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                this.Close();
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al guardar en la base de datos: " + ex.Message);
+                }
             }
         }
 

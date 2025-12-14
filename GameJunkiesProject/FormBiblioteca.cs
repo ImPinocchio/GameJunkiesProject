@@ -1,4 +1,5 @@
 ﻿using GameJunkiesBL;
+using GameJunkiesDL;
 using GameJunkiesEL;
 using System;
 using System.Collections.Generic;
@@ -19,51 +20,53 @@ namespace GameJunkiesProject
         {
             InitializeComponent();
             ConfigurarDiseño();
-            CargarMisJuegos();
+            CargarMisJuegos(); // <--- Aquí ocurre la magia
         }
 
         private void CargarMisJuegos()
         {
+            // 1. Limpiamos el panel por si acaso
             flowPanelBiblioteca.Controls.Clear();
 
-            // 1. Obtenemos los juegos desde el servicio de biblioteca
-            List<Juego> misJuegos = ServicioBiblioteca.ObtenerMisJuegos();
+            // 2. Verificamos que haya alguien logueado
+            if (Usuario.SesionActual == null) return;
 
+            // 3. Vamos a la Base de Datos a buscar los juegos
+            BibliotecaDAL dal = new BibliotecaDAL();
+            List<Juego> misJuegos = dal.ObtenerJuegosUsuario(Usuario.SesionActual.IdUsuario);
+
+            // 4. Si no tiene juegos, mostramos aviso
             if (misJuegos.Count == 0)
             {
-                // Si no hay juegos, mostramos un label o mensaje
-                Label lblVacio = new Label();
-                lblVacio.Text = "Aún no tienes juegos.\n¡Ve a la tienda y compra algo!";
-                lblVacio.ForeColor = Color.Gray;
-                lblVacio.Font = new Font("Segoe UI", 16);
-                lblVacio.AutoSize = true;
-                lblVacio.Padding = new Padding(50);
-                flowPanelBiblioteca.Controls.Add(lblVacio);
+                Label aviso = new Label();
+                aviso.Text = "Aún no tienes juegos. ¡Ve a la tienda!";
+                aviso.ForeColor = Color.Gray;
+                aviso.AutoSize = true;
+                aviso.Font = new Font("Segoe UI", 14);
+                flowPanelBiblioteca.Controls.Add(aviso);
+                return;
             }
-            else
+
+            // 5. Dibujamos cada juego
+            foreach (Juego juego in misJuegos)
             {
-                foreach (Juego j in misJuegos)
-                {
-                    ControlJuego tarjeta = new ControlJuego();
+                ControlJuego tarjeta = new ControlJuego();
 
-                    // --- AQUÍ ACTIVAMOS EL MODO BIBLIOTECA ---
-                    tarjeta.ModoBiblioteca = true;
+                // --- ESTA ES LA LÍNEA MÁGICA ---
+                tarjeta.ModoBiblioteca = true; // <--- ¡Esto cambia el botón a JUGAR!
 
-                    tarjeta.CargarDatos(j);
-                    tarjeta.Margin = new Padding(10);
-                    flowPanelBiblioteca.Controls.Add(tarjeta);
-                }
+                tarjeta.CargarDatos(juego);
+                flowPanelBiblioteca.Controls.Add(tarjeta);
             }
         }
 
         private void ConfigurarDiseño()
         {
-            this.Text = "Mi Biblioteca de Juegos";
-            this.BackColor = Color.FromArgb(61, 47, 109);
-            this.WindowState = FormWindowState.Maximized; // Pantalla completa como el principal
-
-            flowPanelBiblioteca.BackColor = Color.FromArgb(61, 47, 109);
-            flowPanelBiblioteca.AutoScroll = true;
+            this.Text = "Mi Biblioteca";
+            this.BackColor = Color.FromArgb(45, 35, 85);
+            flowPanelBiblioteca.BackColor = Color.FromArgb(45, 35, 85);
+            // Asegúrate de que tu FlowLayoutPanel se llame 'flowLayoutPanel1' en el diseño
+            // Si se llama diferente, cambia el nombre aquí.
         }
     }
 }

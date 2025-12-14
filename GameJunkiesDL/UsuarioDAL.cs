@@ -1,4 +1,5 @@
 ﻿using GameJunkiesEL;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -10,70 +11,85 @@ namespace GameJunkiesDL
 {
     public class UsuarioDAL
     {
-        // --- MÉTODO LOGIN (Ya corregido con Nickname) ---
+        // --- MÉTODO LOGIN (Versión MySQL) ---
         public Usuario Login(string email, string password)
         {
             Usuario usuarioEncontrado = null;
 
-            using (SqlConnection conn = Conexion.GetConexion())
+            using (MySqlConnection conn = Conexion.GetConexion())
             {
-                conn.Open();
-
-                // Agregamos Nickname al SELECT
-                string query = "SELECT IdUsuario, NombreCompleto, Nickname, Email, Rol FROM Usuarios WHERE Email = @Email AND Password = @Pass";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@Email", email);
-                    cmd.Parameters.AddWithValue("@Pass", password);
+                    conn.Open();
 
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    // Ajustamos la query a los nombres de columna de tu tabla MySQL
+                    // Tabla: Usuarios (Id, Nombre, Correo, Password, Nickname)
+                    string query = "SELECT Id, Nombre, Nickname, Correo FROM Usuarios WHERE Correo = @Email AND Password = @Pass";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
                     {
-                        if (reader.Read())
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@Pass", password);
+
+                        using (MySqlDataReader reader = cmd.ExecuteReader())
                         {
-                            usuarioEncontrado = new Usuario();
-                            usuarioEncontrado.IdUsuario = Convert.ToInt32(reader["IdUsuario"]);
-                            usuarioEncontrado.NombreCompleto = reader["NombreCompleto"].ToString();
+                            if (reader.Read())
+                            {
+                                usuarioEncontrado = new Usuario();
 
-                            // LEEMOS EL NICKNAME
-                            usuarioEncontrado.Nickname = reader["Nickname"].ToString();
+                                // Mapeamos las columnas de la BD a tu objeto Usuario
+                                // OJO: Si tu clase Usuario usa 'IdUsuario', aquí lo asignamos desde 'Id' de la BD
+                                usuarioEncontrado.IdUsuario = Convert.ToInt32(reader["Id"]);
+                                usuarioEncontrado.NombreCompleto = reader["Nombre"].ToString();
+                                usuarioEncontrado.Nickname = reader["Nickname"].ToString();
+                                usuarioEncontrado.Email = reader["Correo"].ToString();
 
-                            usuarioEncontrado.Email = reader["Email"].ToString();
-                            usuarioEncontrado.Rol = reader["Rol"].ToString();
+                                // Asignamos un Rol por defecto si la tabla no tiene columna Rol
+                                usuarioEncontrado.Rol = "Cliente";
+                            }
                         }
                     }
+                }
+                catch (Exception ex)
+                {
+                    // En un proyecto real, aquí registrarías el error en un log
+                    throw new Exception("Error en Login MySQL: " + ex.Message);
                 }
             }
             return usuarioEncontrado;
         }
 
-        // --- MÉTODO REGISTRAR (Aquí estaba el error) ---
+        // --- MÉTODO REGISTRAR (Versión MySQL) ---
         public int Registrar(Usuario usuario)
         {
             int filasAfectadas = 0;
 
-            // ESTO ES LO QUE FALTABA: Abrir la conexión antes de usarla
-            using (SqlConnection conn = Conexion.GetConexion())
+            using (MySqlConnection conn = Conexion.GetConexion())
             {
-                conn.Open();
-
-                // Query con Nickname
-                string query = "INSERT INTO Usuarios (NombreCompleto, Nickname, Email, Password, Rol) " +
-                               "VALUES (@Nombre, @Nick, @Email, @Pass, 'Cliente')";
-
-                using (SqlCommand cmd = new SqlCommand(query, conn))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@Nombre", usuario.NombreCompleto);
-                    cmd.Parameters.AddWithValue("@Nick", usuario.Nickname); // Guardamos el nick
-                    cmd.Parameters.AddWithValue("@Email", usuario.Email);
-                    cmd.Parameters.AddWithValue("@Pass", usuario.Password);
+                    conn.Open();
 
-                    // Ejecutamos el comando y guardamos el resultado
-                    filasAfectadas = cmd.ExecuteNonQuery();
+                    // Query ajustada a la tabla MySQL
+                    string query = "INSERT INTO Usuarios (Nombre, Correo, Password, Nickname) " +
+                                   "VALUES (@Nombre, @Email, @Pass, @Nick)";
+
+                    using (MySqlCommand cmd = new MySqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Nombre", usuario.NombreCompleto);
+                        cmd.Parameters.AddWithValue("@Email", usuario.Email);
+                        cmd.Parameters.AddWithValue("@Pass", usuario.Password);
+                        cmd.Parameters.AddWithValue("@Nick", usuario.Nickname);
+
+                        filasAfectadas = cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Error al Registrar en MySQL: " + ex.Message);
                 }
             }
 
-            // Devolvemos cuántas filas se guardaron (1 = Éxito)
             return filasAfectadas;
         }
     }

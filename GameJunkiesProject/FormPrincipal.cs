@@ -62,9 +62,8 @@ namespace GameJunkiesProject
         // --- EVENTO DEL BOTÓN CARRITO ---
         private void btnVerCarrito_Click(object sender, EventArgs e)
         {
-            // Creamos y mostramos la ventana del carrito
-            FormCarrito carrito = new FormCarrito();
-            carrito.ShowDialog(); // ShowDialog hace que no puedas tocar la ventana de atrás hasta cerrar esta
+            FormCarrito carrito = new FormCarrito(usuarioActual);
+            carrito.ShowDialog(); 
         }
 
         private async void CargarPagina()

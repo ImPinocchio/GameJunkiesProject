@@ -8,16 +8,16 @@ namespace GameJunkiesEL
 {
     public class Usuario
     {
+        // ... (Tus propiedades actuales: IdUsuario, Nombre, etc.) ...
         public int IdUsuario { get; set; }
         public string NombreCompleto { get; set; }
-
-        public string Nickname { get; set; } 
-
+        public string Nickname { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public string Rol { get; set; }
-        public DateTime FechaRegistro { get; set; }
 
-        public Usuario() { }
+        // --- NUEVO: SESIÓN GLOBAL ---
+        // Esto guardará al usuario logueado para que todos lo vean
+        public static Usuario SesionActual { get; set; }
     }
 }

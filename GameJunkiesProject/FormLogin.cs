@@ -20,14 +20,11 @@ namespace GameJunkiesProject
             InitializeComponent();
         }
 
-        // Constructor que recibe Usuario (lo agregamos porque tu código lo pide para la redirección)
+        // Constructor que recibe Usuario (lo mantenemos por compatibilidad)
         public FormLogin(Usuario usuario)
         {
             InitializeComponent();
-            // Aquí podrías usar 'usuario' si quisieras mostrar algo en la nueva ventana
         }
-
-       
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -41,20 +38,23 @@ namespace GameJunkiesProject
 
                 if (usuarioLogueado != null)
                 {
-                    // Saludo (esto ya lo tienes bien)
+                    // --- PASO CRÍTICO: GUARDAR LA SESIÓN GLOBAL ---
+                    // Esto permite que ControlJuego pueda acceder al usuario sin que se lo pasemos.
+                    Usuario.SesionActual = usuarioLogueado;
+
+                    // Saludo
                     string nombre = !string.IsNullOrEmpty(usuarioLogueado.Nickname)
                                     ? usuarioLogueado.Nickname
                                     : usuarioLogueado.NombreCompleto;
 
                     MessageBox.Show($"¡Bienvenido {nombre}!", "GameJunkies", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // --- AQUÍ ESTÁ LA CORRECCIÓN CLAVE ---
                     this.Hide(); // Ocultamos el Login
 
-                    // IMPORTANTE: Aquí debe decir 'FormPrincipal', NO 'FormLogin'
+                    // Abrimos la tienda
                     FormPrincipal tienda = new FormPrincipal(usuarioLogueado);
+                    tienda.ShowDialog();
 
-                    tienda.ShowDialog(); // Abrimos la tienda
                     this.Close(); // Al cerrar la tienda, se cierra el programa
                 }
                 else
@@ -66,7 +66,6 @@ namespace GameJunkiesProject
             {
                 MessageBox.Show(ex.Message, "Advertencia", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-
         }
 
         private void button2_Click(object sender, EventArgs e)
