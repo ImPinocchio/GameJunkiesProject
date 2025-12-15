@@ -25,9 +25,11 @@ namespace GameJunkiesEL
 
         public EsrbRating Esrb_Rating { get; set; }
 
-        // --- NUEVO: Aquí guardaremos la sinopsis ---
-        // RAWG nos da 'description' (HTML) y 'description_raw' (Texto limpio). Usamos el limpio.
+        // RAWG nos da 'description' (HTML) y 'description_raw' (Texto limpio).
         public string Description_Raw { get; set; }
+
+        // --- NUEVO: Aquí guardaremos la ruta del archivo .exe en tu PC ---
+        public string RutaEjecutable { get; set; }
     }
 
     public class RespuestaAPI

@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D; // <--- AGREGA ESTO ARRIBA CON LOS OTROS USINGS
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Drawing.Drawing2D; // <--- AGREGA ESTO ARRIBA CON LOS OTROS USINGS
+using System.Diagnostics; // Para Process (Ejecutar juegos)
+using System.IO;          // Para File (Buscar archivos)
+using GameJunkiesDL;
 
 namespace GameJunkiesProject
 {
@@ -101,22 +104,18 @@ namespace GameJunkiesProject
         }
 
         // --- EVENTO 1: VER DETALLES (TIENDA) ---
-        // Este es el código que te faltaba
         private void btnVer_Click(object sender, EventArgs e)
         {
             if (JuegoDatos != null)
             {
                 using (Form sombra = new Form())
                 {
-                    // ... (Configuración de sombra igual) ...
                     sombra.Opacity = 0.50d;
                     sombra.BackColor = Color.Black;
                     sombra.WindowState = FormWindowState.Maximized;
                     sombra.FormBorderStyle = FormBorderStyle.None;
                     sombra.Show();
 
-                    // --- AQUÍ ESTÁ EL CAMBIO ---
-                    // Pasamos 'ModoBiblioteca' al constructor
                     FormDetalles detalle = new FormDetalles(JuegoDatos, ModoBiblioteca);
 
                     detalle.StartPosition = FormStartPosition.CenterScreen;
@@ -134,35 +133,114 @@ namespace GameJunkiesProject
             }
         }
 
-        // --- EVENTO 2: JUGAR (BIBLIOTECA) ---
+        // --- EVENTO 2: JUGAR (BIBLIOTECA) - ¡AHORA ES REAL! ---
         private void btnJugar_Click(object sender, EventArgs e)
         {
-            MessageBox.Show($"Iniciando {JuegoDatos.Name}...\n\n(Imagina que el juego se abre en pantalla completa 🎮)",
-                            "GameJunkies Launcher", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // 1. Verificamos ruta y archivo
+            if (!string.IsNullOrEmpty(JuegoDatos.RutaEjecutable) && File.Exists(JuegoDatos.RutaEjecutable))
+            {
+                try
+                {
+                    // Detectamos si es un Acceso Directo (.lnk) o un Ejecutable (.exe)
+                    string extension = Path.GetExtension(JuegoDatos.RutaEjecutable).ToLower();
+
+                    ProcessStartInfo startInfo = new ProcessStartInfo();
+                    startInfo.FileName = JuegoDatos.RutaEjecutable;
+                    startInfo.UseShellExecute = true; // NECESARIO para que Windows entienda el .lnk
+
+                    // --- LÓGICA INTELIGENTE ---
+                    if (extension == ".exe")
+                    {
+                        // Si es un EXE, nosotros le decimos dónde está su "cocina" (su carpeta)
+                        startInfo.WorkingDirectory = Path.GetDirectoryName(JuegoDatos.RutaEjecutable);
+                    }
+                    // Si es .lnk (acceso directo), NO tocamos el WorkingDirectory. 
+                    // El acceso directo ya sabe dónde ir. Si lo tocamos, lo rompemos.
+
+                    // Minimizamos el Launcher para evitar conflictos gráficos
+                    Form formPrincipal = this.FindForm();
+                    if (formPrincipal != null) formPrincipal.WindowState = FormWindowState.Minimized;
+
+                    Process.Start(startInfo);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Error al lanzar: " + ex.Message);
+                    if (this.FindForm() != null) this.FindForm().WindowState = FormWindowState.Normal;
+                }
+            }
+            // 2. Si no existe, buscamos
+            else
+            {
+                DialogResult respuesta = MessageBox.Show(
+                   $"No se encuentra el juego {JuegoDatos.Name}.\n¿Quieres buscar el archivo (EXE o Acceso Directo)?",
+                   "Vincular Juego",
+                   MessageBoxButtons.YesNo,
+                   MessageBoxIcon.Question);
+
+                if (respuesta == DialogResult.Yes)
+                {
+                    using (OpenFileDialog ofd = new OpenFileDialog())
+                    {
+                        // --- CAMBIO AQUÍ: Ahora permitimos .exe Y .lnk ---
+                        ofd.Filter = "Aplicaciones (*.exe;*.lnk)|*.exe;*.lnk|Todos los archivos (*.*)|*.*";
+                        ofd.Title = "Selecciona el juego o su acceso directo";
+
+                        if (ofd.ShowDialog() == DialogResult.OK)
+                        {
+                            string ruta = ofd.FileName;
+                            JuegoDatos.RutaEjecutable = ruta;
+
+                            // Guardamos en BD
+                            try { new BibliotecaDAL().ActualizarRutaJuego(Usuario.SesionActual.IdUsuario, JuegoDatos.Id, ruta); }
+                            catch { }
+
+                            // Ejecutamos (Copia de la misma lógica de arriba)
+                            try
+                            {
+                                string ext = Path.GetExtension(ruta).ToLower();
+                                ProcessStartInfo psi = new ProcessStartInfo();
+                                psi.FileName = ruta;
+                                psi.UseShellExecute = true;
+
+                                if (ext == ".exe")
+                                {
+                                    psi.WorkingDirectory = Path.GetDirectoryName(ruta);
+                                }
+
+                                // Minimizamos
+                                if (this.FindForm() != null) this.FindForm().WindowState = FormWindowState.Minimized;
+
+                                Process.Start(psi);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show("Error al lanzar: " + ex.Message);
+                                if (this.FindForm() != null) this.FindForm().WindowState = FormWindowState.Normal;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         // --- MÉTODOS VISUALES (HOVER Y CLICKS EN TARJETA) ---
-        // Este método es CRÍTICO para que puedas dar click en la imagen, no solo en el botón
         private void AsignarEventosHover(Control control)
         {
             control.MouseEnter += EfectoEntrada;
             control.MouseLeave += EfectoSalida;
 
-            // Si el control NO es el botón, le asignamos el click de la tarjeta
             if (!(control is Button))
             {
-                // Quitamos eventos previos para no acumularlos
                 control.Click -= btnJugar_Click;
                 control.Click -= btnVer_Click;
 
-                // Asignamos el evento correcto según el modo
                 if (ModoBiblioteca)
                     control.Click += btnJugar_Click;
                 else
                     control.Click += btnVer_Click;
             }
 
-            // Recursividad para hijos (la imagen, los labels, etc.)
             foreach (Control hijo in control.Controls)
             {
                 if (!(hijo is Button)) AsignarEventosHover(hijo);
