@@ -61,6 +61,7 @@ namespace GameJunkiesProject
 
         public void CargarDatos(Juego juego)
         {
+            // Asignar datos a controles visuales y propiedades internas 
             JuegoDatos = juego;
             lblTitulo.Text = juego.Name;
             lblRating.Text = $"⭐ {juego.Rating}";

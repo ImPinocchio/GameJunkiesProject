@@ -31,6 +31,8 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPrincipal));
             this.txtBuscar = new System.Windows.Forms.TextBox();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.btnIA = new System.Windows.Forms.Button();
+            this.btnBiblioteca = new System.Windows.Forms.Button();
             this.btnVerCarrito = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.lblPagina = new System.Windows.Forms.Label();
@@ -38,8 +40,6 @@
             this.btnAnterior = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-            this.btnBiblioteca = new System.Windows.Forms.Button();
-            this.btnIA = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel2.SuspendLayout();
@@ -73,15 +73,40 @@
             this.panel1.Size = new System.Drawing.Size(861, 74);
             this.panel1.TabIndex = 2;
             // 
+            // btnIA
+            // 
+            this.btnIA.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
+            this.btnIA.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnIA.Location = new System.Drawing.Point(316, 48);
+            this.btnIA.Name = "btnIA";
+            this.btnIA.Size = new System.Drawing.Size(95, 23);
+            this.btnIA.TabIndex = 8;
+            this.btnIA.Text = "Asistente IA";
+            this.btnIA.UseVisualStyleBackColor = false;
+            this.btnIA.Click += new System.EventHandler(this.btnIA_Click);
+            // 
+            // btnBiblioteca
+            // 
+            this.btnBiblioteca.BackColor = System.Drawing.Color.Gold;
+            this.btnBiblioteca.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnBiblioteca.Location = new System.Drawing.Point(12, 31);
+            this.btnBiblioteca.Name = "btnBiblioteca";
+            this.btnBiblioteca.Size = new System.Drawing.Size(98, 23);
+            this.btnBiblioteca.TabIndex = 7;
+            this.btnBiblioteca.Text = "📚 Biblioteca";
+            this.btnBiblioteca.UseVisualStyleBackColor = false;
+            this.btnBiblioteca.Click += new System.EventHandler(this.btnBiblioteca_Click_1);
+            // 
             // btnVerCarrito
             // 
+            this.btnVerCarrito.BackColor = System.Drawing.Color.Lime;
             this.btnVerCarrito.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnVerCarrito.Location = new System.Drawing.Point(485, 12);
             this.btnVerCarrito.Name = "btnVerCarrito";
             this.btnVerCarrito.Size = new System.Drawing.Size(75, 30);
             this.btnVerCarrito.TabIndex = 6;
             this.btnVerCarrito.Text = "🛒 Carrito";
-            this.btnVerCarrito.UseVisualStyleBackColor = true;
+            this.btnVerCarrito.UseVisualStyleBackColor = false;
             // 
             // pictureBox1
             // 
@@ -145,26 +170,6 @@
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Size = new System.Drawing.Size(861, 357);
             this.flowLayoutPanel1.TabIndex = 1;
-            // 
-            // btnBiblioteca
-            // 
-            this.btnBiblioteca.Location = new System.Drawing.Point(12, 19);
-            this.btnBiblioteca.Name = "btnBiblioteca";
-            this.btnBiblioteca.Size = new System.Drawing.Size(98, 23);
-            this.btnBiblioteca.TabIndex = 7;
-            this.btnBiblioteca.Text = "📚 Biblioteca";
-            this.btnBiblioteca.UseVisualStyleBackColor = true;
-            this.btnBiblioteca.Click += new System.EventHandler(this.btnBiblioteca_Click_1);
-            // 
-            // btnIA
-            // 
-            this.btnIA.Location = new System.Drawing.Point(316, 48);
-            this.btnIA.Name = "btnIA";
-            this.btnIA.Size = new System.Drawing.Size(95, 23);
-            this.btnIA.TabIndex = 8;
-            this.btnIA.Text = "Asistente IA";
-            this.btnIA.UseVisualStyleBackColor = true;
-            this.btnIA.Click += new System.EventHandler(this.btnIA_Click);
             // 
             // FormPrincipal
             // 
