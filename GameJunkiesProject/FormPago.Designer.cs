@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPago));
             this.lblTotal = new System.Windows.Forms.Label();
             this.txtNumeroTarjeta = new System.Windows.Forms.TextBox();
             this.txtFecha = new System.Windows.Forms.TextBox();
@@ -127,9 +128,9 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(16, 132);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(25, 13);
+            this.label4.Size = new System.Drawing.Size(35, 13);
             this.label4.TabIndex = 10;
-            this.label4.Text = "ccv";
+            this.label4.Text = "label4";
             // 
             // FormPago
             // 
@@ -147,6 +148,7 @@
             this.Controls.Add(this.txtFecha);
             this.Controls.Add(this.txtNumeroTarjeta);
             this.Controls.Add(this.lblTotal);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormPago";
             this.Text = "FormPago";
             this.ResumeLayout(false);

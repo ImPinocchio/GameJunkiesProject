@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormChatIA));
             this.panelChat = new System.Windows.Forms.FlowLayoutPanel();
             this.txtMensaje = new System.Windows.Forms.TextBox();
             this.btnEnviar = new System.Windows.Forms.Button();
@@ -76,6 +77,7 @@
             this.Controls.Add(this.btnEnviar);
             this.Controls.Add(this.txtMensaje);
             this.Controls.Add(this.panelChat);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormChatIA";
             this.Text = "FormChatIA";
             this.ResumeLayout(false);
